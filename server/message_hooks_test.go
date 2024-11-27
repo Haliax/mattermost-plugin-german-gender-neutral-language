@@ -31,7 +31,7 @@ func TestEscapeAsteriskInWord(t *testing.T) {
 
 // TestMessageWillBePosted tests the MessageWillBePosted function
 func TestMessageWillBePosted(t *testing.T) {
-	p := &Plugin{botID: "testBot"}
+	p := &Plugin{}
 	post := &model.Post{UserId: "userId", Message: "Freund*in"}
 
 	modifiedPost, _ := p.MessageWillBePosted(nil, post)
@@ -44,7 +44,7 @@ func TestMessageWillBePosted(t *testing.T) {
 
 // TestMessageWillBeUpdated tests the MessageWillBeUpdated function
 func TestMessageWillBeUpdated(t *testing.T) {
-	p := &Plugin{botID: "testBot"}
+	p := &Plugin{}
 	newPost := &model.Post{UserId: "userId", Message: "Freund*innen"}
 	oldPost := &model.Post{UserId: "userId", Message: "Old message"}
 

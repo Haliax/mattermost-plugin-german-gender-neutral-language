@@ -20,11 +20,6 @@ func (p *Plugin) MessageWillBePosted(c *plugin.Context, post *model.Post) (*mode
 		return post, ""
 	}
 
-	// Always allow posts by the demo plugin user and demo plugin bot.
-	if post.UserId == p.botID || post.UserId == configuration.demoUserID {
-		return post, ""
-	}
-
 	// Process the post message to escape * within words containing "*innen" or "*in"
 	post.Message = escapeAsteriskInWord(post.Message)
 	return post, ""

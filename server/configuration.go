@@ -18,13 +18,16 @@ import (
 // If you add non-reference types to your configuration struct, be sure to rewrite Clone as a deep
 // copy appropriate for your types.
 type configuration struct {
+	// disabled tracks whether the plugin has been disabled after activation. It always starts enabled.
+	disabled bool
 }
 
 // Clone shallow copies the configuration. Your implementation may require a deep copy if
 // your configuration has reference types.
 func (c *configuration) Clone() *configuration {
-	var clone = *c
-	return &clone
+	return &configuration{
+		disabled: c.disabled,
+	}
 }
 
 // getConfiguration retrieves the active configuration under lock, making it safe to use
@@ -70,7 +73,7 @@ func (p *Plugin) setConfiguration(configuration *configuration) {
 
 // OnConfigurationChange is invoked when configuration changes may have been made.
 func (p *Plugin) OnConfigurationChange() error {
-	var configuration = new(configuration)
+	var configuration = p.getConfiguration().Clone()
 
 	// Load the public configuration fields from the Mattermost server configuration.
 	if err := p.API.LoadPluginConfiguration(configuration); err != nil {

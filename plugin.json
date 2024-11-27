@@ -6,7 +6,7 @@
     "support_url": "https://github.com/Haliax/mattermost-plugin-gender-neutral-language/issues",
     "icon_path": "assets/starter-template-icon.svg",
     "min_server_version": "10.0.0",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "server": {
         "executables": {
             "linux-amd64": "server/dist/plugin-linux-amd64",
@@ -16,11 +16,8 @@
             "windows-amd64": "server/dist/plugin-windows-amd64.exe"
         }
     },
-    "webapp": {
-        "bundle_path": "webapp/dist/main.js"
-    },
     "settings_schema": {
-        "header": "",
+        "header": "There are no settings for this plugin.",
         "footer": "",
         "settings": []
     }

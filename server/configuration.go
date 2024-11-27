@@ -3,6 +3,7 @@ package main
 import (
 	"reflect"
 
+	"github.com/mattermost/mattermost/server/public/model"
 	"github.com/pkg/errors"
 )
 
@@ -18,13 +19,24 @@ import (
 // If you add non-reference types to your configuration struct, be sure to rewrite Clone as a deep
 // copy appropriate for your types.
 type configuration struct {
+	// The user to use as part of the demo plugin, created automatically if it does not exist.
+	Username string
+
+	// disabled tracks whether the plugin has been disabled after activation. It always starts enabled.
+	disabled bool
+
+	// demoUserID is the id of the user specified above.
+	demoUserID string
 }
 
 // Clone shallow copies the configuration. Your implementation may require a deep copy if
 // your configuration has reference types.
 func (c *configuration) Clone() *configuration {
-	var clone = *c
-	return &clone
+	return &configuration{
+		Username:   c.Username,
+		disabled:   c.disabled,
+		demoUserID: c.demoUserID,
+	}
 }
 
 // getConfiguration retrieves the active configuration under lock, making it safe to use
@@ -70,12 +82,23 @@ func (p *Plugin) setConfiguration(configuration *configuration) {
 
 // OnConfigurationChange is invoked when configuration changes may have been made.
 func (p *Plugin) OnConfigurationChange() error {
-	var configuration = new(configuration)
+	var configuration = p.getConfiguration().Clone()
 
 	// Load the public configuration fields from the Mattermost server configuration.
 	if err := p.API.LoadPluginConfiguration(configuration); err != nil {
 		return errors.Wrap(err, "failed to load plugin configuration")
 	}
+
+	botID, ensureBotError := p.API.EnsureBotUser(&model.Bot{
+		Username:    "german-language-bot",
+		DisplayName: "German Language Bot",
+		Description: "A bot designed to resolve formatting issues with gender-neutral language in German. ",
+	})
+	if ensureBotError != nil {
+		return errors.Wrap(ensureBotError, "failed to ensure default channel bot")
+	}
+
+	p.botID = botID
 
 	p.setConfiguration(configuration)
 
